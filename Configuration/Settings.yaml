@@ -34,6 +34,11 @@ Dotpulse:
       #     - 13.4024713
       # ...
 
+    StatusCodeForUserAgents: # ~ disables the special handling by user agent
+      StatusCode: 301
+      UserAgents:
+        - 'crawly'
+
     # todo: ipinfo.io access token implementation..
 
 # Update Cookie if referer to request uri changes:

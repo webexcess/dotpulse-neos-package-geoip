@@ -55,6 +55,22 @@ class GeoIPController extends \TYPO3\Flow\Mvc\Controller\ActionController
     {
         $redirectUri = $this->settings['DefaultLanguage'] . $this->settings['DefaultDelimiter'] . $this->settings['DefaultRegion'];
 
+        // check user agents to ignore..
+        if (
+            array_key_exists('StatusCodeForUserAgents', $this->settings)
+            && $this->request->getHttpRequest()->hasHeader('User-Agent')
+            && array_key_exists('UserAgents', $this->settings['StatusCodeForUserAgents'])
+            && is_array($this->settings['StatusCodeForUserAgents']['UserAgents'])
+            && (string)$this->request->getHttpRequest()->getRelativePath()=='')
+        {
+            $userAgent = $this->request->getHttpRequest()->getHeader('User-Agent');
+            foreach ($this->settings['StatusCodeForUserAgents']['UserAgents'] as $itemUserAgent) {
+                if (strpos($userAgent, $itemUserAgent)!==false) {
+                    $this->redirectToUri($this->settings['DefaultLanguage'], 0, $this->settings['StatusCodeForUserAgents']['StatusCode']);
+                }
+            }
+        }
+
         // check if the site is requested without path..
         if ($this->request->getHttpRequest()->hasHeader('Referer') && (string)$this->request->getHttpRequest()->getRelativePath()=='') {
             if (strpos($this->request->getHttpRequest()->getHeader('Referer'), (string)$this->request->getHttpRequest()->getBaseUri())===0) {
