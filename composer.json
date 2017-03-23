@@ -2,7 +2,7 @@
     "name": "dotpulse/geoip",
     "type": "typo3-flow-package",
     "description": "Detects Browser Language and Region",
-    "version": "2.1.4",
+    "version": "2.2.0",
     "license": "MIT",
     "authors": [
         {

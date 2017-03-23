@@ -4,7 +4,6 @@ Dotpulse:
     DefaultRegion: 'zh'
     DefaultDelimiter: '_'
     RedirectStatusCode: 303
-    CookieMaximumAge: '1 week' # ~ disables cookies
 
     AllowedLanguageRegionCombinations:
       - 'en_zh'

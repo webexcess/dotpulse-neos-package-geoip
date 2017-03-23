@@ -73,14 +73,12 @@ class GeoIPController extends \TYPO3\Flow\Mvc\Controller\ActionController
 
         // check cookie first..
         // redirectToUri throws StopActionException - do not wrap with try catch..
-        if (array_key_exists('CookieMaximumAge', $this->settings)) {
-            $cookie = $this->request->getHttpRequest()->getCookie('dotpulse_geoip');
-            // if (!is_null($cookie) && in_array($cookie->getValue(), $this->settings['AllowedLanguageRegionCombinations'])) {
-            if (isset($cookie) && in_array($cookie->getValue(), $this->settings['AllowedLanguageRegionCombinations'])) {
-                // $this->redirectToUri($redirectUri, 0, $cookie->getValue());
-                $this->redirectToUri($cookie->getValue(), 0, $this->settings['RedirectStatusCode']);
-                return;
-            }
+        $cookie = $this->request->getHttpRequest()->getCookie('dotpulse_geoip');
+        // if (!is_null($cookie) && in_array($cookie->getValue(), $this->settings['AllowedLanguageRegionCombinations'])) {
+        if (isset($cookie) && in_array($cookie->getValue(), $this->settings['AllowedLanguageRegionCombinations'])) {
+            // $this->redirectToUri($redirectUri, 0, $cookie->getValue());
+            $this->redirectToUri($cookie->getValue(), 0, $this->settings['RedirectStatusCode']);
+            return;
         }
 
         // check if the site is requested without path..
@@ -161,12 +159,10 @@ class GeoIPController extends \TYPO3\Flow\Mvc\Controller\ActionController
         }
 
 
-        if (array_key_exists('CookieMaximumAge', $this->settings)) {
-            $dateTime = new \DateTime('now');
-            $dateTime->add(\DateInterval::createFromDateString($this->settings['CookieMaximumAge']));
-            $cookie = new Cookie('dotpulse_geoip', $redirectUri, $dateTime, null, null, '/', false, false);
-            $this->response->setCookie($cookie);
-        }
+        $dateTime = new \DateTime('now');
+        $dateTime->add(\DateInterval::createFromDateString('1 year'));
+        $cookie = new Cookie('dotpulse_geoip', $redirectUri, $dateTime, null, null, '/', false, false);
+        $this->response->setCookie($cookie);
 
         $this->redirectToUri($redirectUri, 0, $this->settings['RedirectStatusCode']);
     }

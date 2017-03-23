@@ -3,6 +3,7 @@ namespace Dotpulse\GeoIP\HttpComponent;
 
 use TYPO3\Flow\Http\Component\ComponentInterface;
 use TYPO3\Flow\Http\Component\ComponentContext;
+use TYPO3\Flow\Http\Cookie;
 
 /**
  * A sample HTTP component that intercepts the default handling and returns "bar" if the request contains an argument
@@ -44,8 +45,11 @@ class DotpulseGeoIPUpdateCookieHTTPComponent implements ComponentInterface
             // set an updated cookie if existing..
             $cookie = $httpRequest->getCookie('dotpulse_geoip');
             if (!is_null($cookie)) {
-                $cookie->setValue($requestKey);
-                $httpResponse->setCookie($cookie);
+                $dateTime = new \DateTime('now');
+                $dateTime->add(\DateInterval::createFromDateString('1 year'));
+                $newCookie = new Cookie('dotpulse_geoip', $requestKey, $dateTime, null, null, '/', false, false);
+
+                $httpResponse->setCookie($newCookie);
             }else{
                 return;
             }
