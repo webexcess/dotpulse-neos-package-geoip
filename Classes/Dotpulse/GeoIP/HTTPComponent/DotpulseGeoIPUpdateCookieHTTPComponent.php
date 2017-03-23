@@ -3,7 +3,6 @@ namespace Dotpulse\GeoIP\HttpComponent;
 
 use TYPO3\Flow\Http\Component\ComponentInterface;
 use TYPO3\Flow\Http\Component\ComponentContext;
-use TYPO3\Flow\Http\Cookie;
 
 /**
  * A sample HTTP component that intercepts the default handling and returns "bar" if the request contains an argument
@@ -40,7 +39,7 @@ class DotpulseGeoIPUpdateCookieHTTPComponent implements ComponentInterface
 
         $requestKey = $this->getLanguageRegionKeyOfUri($requestUri);
         $refererKey = $this->getLanguageRegionKeyOfUri($referer);
-        
+
         if (!is_null($requestKey) && !is_null($refererKey) && $requestKey!=$refererKey) {
             // set an updated cookie if existing..
             $cookie = $httpRequest->getCookie('dotpulse_geoip');

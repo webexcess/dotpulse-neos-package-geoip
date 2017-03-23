@@ -71,6 +71,18 @@ class GeoIPController extends \TYPO3\Flow\Mvc\Controller\ActionController
             }
         }
 
+        // check cookie first..
+        // redirectToUri throws StopActionException - do not wrap with try catch..
+        if (array_key_exists('CookieMaximumAge', $this->settings)) {
+            $cookie = $this->request->getHttpRequest()->getCookie('dotpulse_geoip');
+            // if (!is_null($cookie) && in_array($cookie->getValue(), $this->settings['AllowedLanguageRegionCombinations'])) {
+            if (isset($cookie) && in_array($cookie->getValue(), $this->settings['AllowedLanguageRegionCombinations'])) {
+                // $this->redirectToUri($redirectUri, 0, $cookie->getValue());
+                $this->redirectToUri($cookie->getValue(), 0, $this->settings['RedirectStatusCode']);
+                return;
+            }
+        }
+
         // check if the site is requested without path..
         if ($this->request->getHttpRequest()->hasHeader('Referer') && (string)$this->request->getHttpRequest()->getRelativePath()=='') {
             if (strpos($this->request->getHttpRequest()->getHeader('Referer'), (string)$this->request->getHttpRequest()->getBaseUri())===0) {
@@ -82,22 +94,8 @@ class GeoIPController extends \TYPO3\Flow\Mvc\Controller\ActionController
         }
 
         try {
-
-            // check cookie first..
-            if (array_key_exists('CookieMaximumAge', $this->settings)) {
-                $cookie = $this->request->getHttpRequest()->getCookie('dotpulse_geoip');
-                if (!is_null($cookie) && in_array($cookie->getValue(),
-                        $this->settings['AllowedLanguageRegionCombinations'])
-                ) {
-                    $this->redirectToUri($redirectUri, 0, $cookie->getValue());
-
-                    return;
-                }
-            }
-
             // fetch matching language dimension..
-            $language = substr($this->localeDetector->detectLocaleFromHttpHeader($this->request->getHttpRequest()->getHeader('Accept-Language')),
-                0, 2);
+            $language = substr($this->localeDetector->detectLocaleFromHttpHeader($this->request->getHttpRequest()->getHeader('Accept-Language')), 0, 2);
             $presets = $this->contentDimensionPresetSourceInterface->getAllPresets();
             if (!array_key_exists($language, $presets['language']['presets'])) {
                 $language = $presets['language']['default'];
@@ -117,7 +115,6 @@ class GeoIPController extends \TYPO3\Flow\Mvc\Controller\ActionController
             if (is_null($geoData) || !array_key_exists('loc', $geoData) || strpos($geoData['loc'], ',') === false) {
                 // something went wrong..
                 $this->redirectToUri($redirectUri, 0, $this->settings['RedirectStatusCode']);
-
                 return;
             }
 
@@ -145,7 +142,6 @@ class GeoIPController extends \TYPO3\Flow\Mvc\Controller\ActionController
             // calculate closest region..
             $distances = array_map(function ($item) use ($loc) {
                 $a = array_slice($item, -2);
-
                 return $this->distance($a, $loc);
             }, $items);
             asort($distances);
@@ -161,12 +157,14 @@ class GeoIPController extends \TYPO3\Flow\Mvc\Controller\ActionController
             $redirectUri = strtolower($redirectUri);
         } catch (\Exception $e) {
             // todo: log..
+            // \TYPO3\Flow\var_dump($e);
         }
+
 
         if (array_key_exists('CookieMaximumAge', $this->settings)) {
             $dateTime = new \DateTime('now');
             $dateTime->add(\DateInterval::createFromDateString($this->settings['CookieMaximumAge']));
-            $cookie = new Cookie('dotpulse_geoip', $redirectUri, $dateTime);
+            $cookie = new Cookie('dotpulse_geoip', $redirectUri, $dateTime, null, null, '/', false, false);
             $this->response->setCookie($cookie);
         }
 
