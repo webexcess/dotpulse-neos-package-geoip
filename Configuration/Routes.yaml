@@ -1,0 +1,17 @@
+# add to your base Routes.yaml:
+# -
+#     name: 'Dotpulse GeoIP'
+#     uriPattern: '<DotpulseGeoIPSubroutes>'
+#     subRoutes:
+#         'DotpulseGeoIPSubroutes':
+#             package: Dotpulse.GeoIP
+
+-
+  name:  'dotpulse GeoIP - Home - Redirect'
+  uriPattern: ''
+  defaults:
+    '@package':    'Dotpulse.GeoIP'
+    '@controller': 'GeoIP'
+    '@action':     'homeRedirect'
+    '@format':     'html'
+  appendExceedingArguments: TRUE

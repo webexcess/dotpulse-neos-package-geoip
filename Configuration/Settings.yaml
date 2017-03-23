@@ -1,0 +1,48 @@
+Dotpulse:
+  GeoIP:
+    DefaultLanguage: 'en'
+    DefaultRegion: 'zh'
+    DefaultDelimiter: '_'
+    RedirectStatusCode: 303
+    CookieMaximumAge: '1 week' # ~ disables cookies
+
+    AllowedLanguageRegionCombinations:
+      - 'en_zh'
+      - 'en_ber'
+      - 'en_lon'
+      - 'en_ny'
+      - 'de_zh'
+      - 'de_ber'
+
+    # Use "Node" or "Static":
+    RegionLatLng:
+      Node:
+        Path: '/sites/theme'
+        FieldTitle: 'addressTitle'
+        FieldLat: 'addressLat'
+        FieldLng: 'addressLng'
+
+      # todo: a static delivery of lat-lng infos..
+      # Static:
+      #   zh:
+      #     - Zurich
+      #     - 47.3620619
+      #     - 8.5160778
+      #   ber:
+      #     - Berlin
+      #     - 52.5185752
+      #     - 13.4024713
+      # ...
+
+    # todo: ipinfo.io access token implementation..
+
+# Update Cookie if referer to request uri changes:
+TYPO3:
+  Flow:
+    http:
+      chain:
+        'process':
+          chain:
+            'dotpulse_geoip':
+              position: 'end'
+              component: 'Dotpulse\GeoIP\HttpComponent\DotpulseGeoIPUpdateCookieHTTPComponent'

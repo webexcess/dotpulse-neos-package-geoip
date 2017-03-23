@@ -1,0 +1,11 @@
+privilegeTargets:
+  'TYPO3\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
+    'Dotpulse.GeoIP:HomeRedirect':
+      matcher: 'method(Dotpulse\GeoIP\Controller\GeoIPController->homeRedirectAction())'
+
+roles:
+  'TYPO3.Flow:Everybody':
+    privileges:
+      -
+        privilegeTarget: 'Dotpulse.GeoIP:HomeRedirect'
+        permission: GRANT
