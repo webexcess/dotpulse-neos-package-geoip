@@ -55,6 +55,16 @@ class GeoIPController extends \TYPO3\Flow\Mvc\Controller\ActionController
     {
         $redirectUri = $this->settings['DefaultLanguage'] . $this->settings['DefaultDelimiter'] . $this->settings['DefaultRegion'];
 
+        // check if the site is requested without path..
+        if ($this->request->getHttpRequest()->hasHeader('Referer') && (string)$this->request->getHttpRequest()->getRelativePath()=='') {
+            if (strpos($this->request->getHttpRequest()->getHeader('Referer'), (string)$this->request->getHttpRequest()->getBaseUri())===0) {
+                // it's an internal request, but without dimension.
+                // set it to default language dimension..
+                $this->redirectToUri($this->settings['DefaultLanguage'], 0, $this->settings['RedirectStatusCode']);
+                // redirectToUri throws StopActionException - do not wrap with try catch..
+            }
+        }
+
         try {
 
             // check cookie first..

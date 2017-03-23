@@ -32,17 +32,16 @@ class DotpulseGeoIPUpdateCookieHTTPComponent implements ComponentInterface
     public function handle(ComponentContext $componentContext)
     {
         // check cookie differs to url..
-
         $httpRequest = $componentContext->getHttpRequest();
         $httpResponse = $componentContext->getHttpResponse();
 
         $requestUri = $httpRequest->getUri()->getPath();
-        $referrer = $httpRequest->getHeader('Referer');
+        $referer = $httpRequest->getHeader('Referer');
 
         $requestKey = $this->getLanguageRegionKeyOfUri($requestUri);
-        $referrerKey = $this->getLanguageRegionKeyOfUri($referrer);
-
-        if (!is_null($requestKey) && !is_null($referrerKey) && $requestKey!=$referrerKey) {
+        $refererKey = $this->getLanguageRegionKeyOfUri($referer);
+        
+        if (!is_null($requestKey) && !is_null($refererKey) && $requestKey!=$refererKey) {
             // set an updated cookie if existing..
             $cookie = $httpRequest->getCookie('dotpulse_geoip');
             if (!is_null($cookie)) {
@@ -64,7 +63,7 @@ class DotpulseGeoIPUpdateCookieHTTPComponent implements ComponentInterface
     private function getLanguageRegionKeyOfUri($uri)
     {
         $re = "/\\/([a-zA-Z0-9_-]+)\\//";
-        preg_match($re, $uri, $matches);
+        preg_match($re, $uri.'/', $matches);
         if (is_array($matches) && array_key_exists(1, $matches)) {
             return $matches[1];
         }
