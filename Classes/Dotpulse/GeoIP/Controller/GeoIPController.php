@@ -50,6 +50,8 @@ class GeoIPController extends \TYPO3\Flow\Mvc\Controller\ActionController
 
     /**
      * @return void
+     * @throws \TYPO3\Flow\Mvc\Exception\StopActionException
+     * @throws \TYPO3\Flow\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function homeRedirectAction()
     {
@@ -101,11 +103,9 @@ class GeoIPController extends \TYPO3\Flow\Mvc\Controller\ActionController
 
             // get public client ip..
             $clientIpAddress = $this->request->getHttpRequest()->getClientIpAddress();
-            if (substr($clientIpAddress, 0, 3) == '192') {
+            if (substr($clientIpAddress, 0, 3) == '192' || $clientIpAddress == '127.0.0.1') {
                 // looks like you'r in a local vm. fetch a public ip..
-                $dyndnsResponse = file_get_contents('http://checkip.dyndns.com/');
-                preg_match('/Current IP Address: \[?([:.0-9a-fA-F]+)\]?/', $dyndnsResponse, $dyndnsMatches);
-                $clientIpAddress = $dyndnsMatches[1];
+                $clientIpAddress = file_get_contents('https://api.ipify.org');
             }
 
             // fetch client region by ip..
